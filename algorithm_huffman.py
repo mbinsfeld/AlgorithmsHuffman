@@ -1,12 +1,5 @@
 
 import string
-with open("csci3104_spring2014_PS5_data.txt") as s:
-	text = s.read().strip()
-	frequencies = {}
-	for x in text:
-		frequencies[x] = text.count(x)
-
-
 
 
 class PriorityQueue:
@@ -63,16 +56,63 @@ class HuffmanNode(object):
 		return(self.left, self.right)
 
 
+def getFrequencies(File):
+	with open(File) as s:
+		text = s.read().strip()
+		frequencies = {}
+		for x in text:
+			frequencies[x] = text.count(x)
+	return frequencies
 
-pq = PriorityQueue()
-for key in frequencies:
-	node = HuffmanNode()
-	node.symbol = key
-	node.freq = frequencies[key]
-	node.isLeaf = True
-	pq.push(node)
-while pq.size > 1:
-	node = HuffmanNode()
-	left = pq.pop()
-	right = pq.pop()
+
+def buildHuffmanTree(frequencies):
+	pq = PriorityQueue()
+	for key in frequencies:
+		node = HuffmanNode()
+		node.symbol = key
+		node.freq = frequencies[key]
+		node.isLeaf = True
+		pq.push(node)
+	while pq.size > 1:
+		node = HuffmanNode()
+		left = pq.pop()
+		right = pq.pop()
+		node.left = left
+		node.right = right
+		node.freq = left.freq + right.freq
+		pq.push(node)
+	return pq.heap[1]
+
+def buildCodeBook(tree):
+	path = ""
+	dic = dict()
+	dic = buildCodeBookHelp(tree, path)
+	return dic
+def buildCodeBookHelp(tree, path):
+	dic = dict()
+	if(tree.isLeaf == True):
+		dic[tree.symbol] = path
+		return dic
+	else:
+		path_left = path + "0"
+		path_right = path + "1"
+		dic = buildCodeBookHelp(tree.left, path_left)
+		right = buildCodeBookHelp(tree.right, path_right)
+		dic = dict(dic.items() + right.items())
+		return dic
+def encodeString(original, codeBook):
+	result = ""
+	string = original.read().strip()
+	for c in string:
+		result = result + codeBook[c]
+	return result
 		
+File = "csci3104_spring2014_PS5_data.txt"
+string = ""
+string = open(File)
+frequencies = getFrequencies(File)
+tree = buildHuffmanTree(frequencies)
+codeBook = buildCodeBook(tree)
+#print codeBook
+encoded = encodeString(string, codeBook)
+print encoded
