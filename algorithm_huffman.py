@@ -25,7 +25,7 @@ class PriorityQueue:
 			if self.heap[index].freq < self.heap[index // 2].freq:
 				self.swap(index, index // 2)
 			self.moveUp(index // 2)
-	def deleteMin(self):
+	def pop(self):
 		retval = self.heap[1]
 
 		self.heap[1] = self.heap[self.size]
@@ -56,6 +56,7 @@ class HuffmanNode(object):
 		self.left = left
 		self.right = right
 		self.root = root
+		self.isLeaf = False
 		symbol = None
 		freq = 0
 	def children(self):
@@ -68,10 +69,10 @@ for key in frequencies:
 	node = HuffmanNode()
 	node.symbol = key
 	node.freq = frequencies[key]
+	node.isLeaf = True
 	pq.push(node)
-
-for i in range(1, pq.size):
-	print "symbol", i, "is"
-	print pq.heap[i].symbol
-	print pq.heap[i].freq
+while pq.size > 1:
+	node = HuffmanNode()
+	left = pq.pop()
+	right = pq.pop()
 		
